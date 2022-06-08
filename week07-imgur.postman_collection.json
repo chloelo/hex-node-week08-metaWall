@@ -1,0 +1,337 @@
+{
+	"info": {
+		"_postman_id": "1fffb5ea-94ca-4d4b-bf48-1089f1734f92",
+		"name": "week07-imgur",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8193408"
+	},
+	"item": [
+		{
+			"name": "註冊新帳號",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"aa@aa.cc\",\r\n    \"password\":\"qwer1234\",\r\n    \"confirmPassword\":\"qwer1234\",\r\n    \"name\":\"aaa\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API_URL}}/sign_up",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"sign_up"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "登入",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n     \"email\":\"aa@aa.cc\",\r\n    \"password\":\"qwer1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API_URL}}/sign_in",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"sign_in"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "更改密碼",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{AUTH_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \r\n    \"password\":\"qwer1235\",\r\n    \"confirmPassword\":\"qwer1235\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API_URL}}/update_password",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"update_password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "更新個人資料",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{AUTH_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"你的名\",\r\n    \"sex\":\"female\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API_URL}}/profile",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "取得個人資料",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{AUTH_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{API_URL}}/profile",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "取得所有貼文",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{AUTH_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{API_URL}}/posts",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "新增一則貼文",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{AUTH_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"content\":\"今天請假了!!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API_URL}}/post",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "修改一則貼文",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{AUTH_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"content\":\"修改一則 11\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API_URL}}/post/:id",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"post",
+						":id"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "62973262d76ca70a03421dd3",
+							"disabled": true
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{POST_ID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "刪除所有貼文",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{AUTH_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{API_URL}}/posts",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "刪除一筆貼文",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{AUTH_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{API_URL}}/post/:id",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"post",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{POST_ID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "上傳圖片",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{AUTH_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "",
+							"type": "file",
+							"src": "/C:/Users/juno9/OneDrive/桌面/dummy-200x200.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{API_URL}}/file/image",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"file",
+						"image"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
