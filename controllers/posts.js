@@ -42,12 +42,21 @@ const posts = {
       return next(appError(400, "你沒有填寫 content 資料", next))
     }
   }),
-  deletePosts: handleErrorAsync(async (req, res) => {
+  deletePosts: handleErrorAsync(async (req, res, next) => {
+    const userId = req.user.id
+    const checkUser = await User.findById(userId).select('role')
+    if(checkUser.role !== 'super-admin') {
+      return next(appError(400, '您沒有權限', next))
+    }
     const posts = await Post.deleteMany({})
     successHandle(res, posts)
   }),
   deletePost: handleErrorAsync(async (req, res, next) => {
     const { id } = req.params
+    const urPost = await Post.find({ user: req.user.id, _id: id }, { new: true })
+    if (Object.keys(urPost).length === 0) {
+      return next(appError(400, "你沒有權限刪除此篇文章喔！", next))
+    }
     const result = await Post.findByIdAndDelete(id, { new: true })
     if (result) {
       successHandle(res, result)
@@ -59,6 +68,10 @@ const posts = {
     const { id } = req.params
     const { body } = req
     const keys = Object.keys(body)
+    const urPost = await Post.find({ user: req.user.id, _id: id }, { new: true })
+    if (Object.keys(urPost).length === 0) {
+      return next(appError(400, "你沒有權限修改此篇文章喔！", next))
+    }
     if (keys.length === 0) {
       return next(appError(400, "欄位不可為空", next))
     }
