@@ -3,6 +3,8 @@ const { appError } = require("../service/exceptions");
 const handleErrorAsync = require("../service/handleErrorAsync");
 const Post = require('../models/postsModel')
 const User = require('../models/usersModel')
+const Comment = require('../models/commentsModel');
+
 const posts = {
   getPosts: handleErrorAsync(async (req, res) => {
     // asc 遞增 (由小到大，由舊到新) createdAt ; desc 遞減 (由大到小、由新到舊) "-createdAt"
@@ -15,6 +17,14 @@ const posts = {
 
     successHandle(res, allPosts)
   }),
+  getPost: handleErrorAsync(async (req, res) => {
+    const { id } = req.params
+    const post = await Post.findById(id).populate({
+      path: 'user',
+      select: 'name photo '
+    })
+    successHandle(res, post)
+  }),
   createPost: handleErrorAsync(async (req, res, next) => {
     const { body } = req
     const keys = Object.keys(body)
@@ -26,7 +36,6 @@ const posts = {
         user: req.user.id,
         image: body.image,
         content: body.content,
-        likes: body.likes
       })
       successHandle(res, newPost)
     } else {
@@ -63,6 +72,68 @@ const posts = {
       return next(appError(400, "貼文更新失敗", next))
     }
 
+  }),
+  addPostLike: handleErrorAsync(async (req, res, next) => {
+    const _id = req.params.id;
+    const likedBefore = await Post.find(
+      {
+        _id,
+        "likes": {
+          $in: [req.user.id] // 尋找陣列裡的值，用 $in
+        }
+      }, { new: true }
+    )
+    if (likedBefore.length > 0) {
+      return next(appError(400, "此篇貼文你已經按過讚了喔！", next))
+    }
+    const result = await Post.findOneAndUpdate(
+      { _id },
+      { $addToSet: { likes: req.user.id } },
+      { new: true }
+    );
+    successHandle(res, result, 201)
+  }),
+  deletePostLike: handleErrorAsync(async (req, res, next) => {
+    const _id = req.params.id;
+    const likedBefore = await Post.find(
+      {
+        _id,
+        "likes": {
+          $in: [req.user.id] // 尋找陣列裡的值，用 $in
+        }
+      }, { new: true }
+    )
+    if (likedBefore.length === 0) {
+      return next(appError(400, "此篇貼文你尚未按過讚喔！", next))
+    }
+    const result = await Post.findOneAndUpdate(
+      { _id },
+      { $pull: { likes: req.user.id } }
+    );
+    successHandle(res, result, 201)
+  }),
+  addPostComment: handleErrorAsync(async (req, res, next) => {
+    const user = req.user.id;
+    const post = req.params.id;
+    const { comment } = req.body;
+    if (!comment) {
+      return next(appError(400, "欄位不可為空", next))
+    }
+    const newComment = await Comment.create({
+      post,
+      user,
+      comment
+    });
+    successHandle(res, newComment, 201)
+  }),
+  getUserPosts: handleErrorAsync(async (req, res) => {
+    const user = req.params.id;
+    console.log('user:' + user)
+    const posts = await Post.find({ user }).populate({
+      path: 'comments',
+      select: 'comment user'
+    });
+    successHandle(res, posts, 200)
   }),
 }
 

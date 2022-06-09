@@ -6,6 +6,7 @@ const { successHandle } = require('../service');
 const { appError } = require("../service/exceptions");
 const handleErrorAsync = require("../service/handleErrorAsync");
 const User = require('../models/usersModel')
+const Post = require('../models/postsModel');
 
 const users = {
   signUp: handleErrorAsync(async (req, res, next) => {
@@ -88,12 +89,74 @@ const users = {
     if (keys.indexOf('name') !== -1 && !body.name) {
       return next(appError(400, "名字為必填", next))
     }
-    const result = await User.findByIdAndUpdate(req.user.id, body,  {new: true, runValidators: true})
+    const result = await User.findByIdAndUpdate(req.user.id, body, { new: true, runValidators: true })
     if (result) {
       successHandle(res, result)
     } else {
       return next(appError(400, "修改檔案失敗", next))
     }
+  }),
+  getUserLikeList: handleErrorAsync(async (req, res, next) => {
+    const likeList = await Post.find({
+      likes: { $in: [req.user.id] }
+    }).populate({
+      path: "user",
+      select: "name _id"
+    });
+    successHandle(res, likeList)
+  }),
+  getUserFollowingList: handleErrorAsync(async (req, res, next) => {
+    const followingList = await User.findById(req.user.id).populate({
+      path: 'following.user',
+      select: 'name photo _id'
+    })
+    successHandle(res, followingList)
+  }),
+  addFollowing: handleErrorAsync(async (req, res, next) => {
+    if (req.params.id === req.user.id) {
+      return next(appError(401, '您無法追蹤自己', next));
+    }
+    await User.updateOne(
+      {
+        _id: req.user.id,
+        'following.user': { $ne: req.params.id }// $ne: 不等於
+      },
+      { // 如果陣列裡沒有就新增
+        $addToSet: { following: { user: req.params.id } }
+      }
+    );
+    await User.updateOne(
+      {
+        _id: req.params.id,
+        'followers.user': { $ne: req.user.id }
+      },
+      {
+        $addToSet: { followers: { user: req.user.id } }
+      }
+    );
+    successHandle(res, { message: '您已成功追蹤！' })
+  }),
+  deleteFollowing: handleErrorAsync(async (req, res, next) => {
+    if (req.params.id === req.user.id) {
+      return next(appError(401, '您無法取消追蹤自己', next));
+    }
+    await User.updateOne(
+      {
+        _id: req.user.id
+      },
+      {
+        $pull: { following: { user: req.params.id } } // $pull 有在陣列裡才刪除
+      }
+    );
+    await User.updateOne(
+      {
+        _id: req.params.id
+      },
+      {
+        $pull: { followers: { user: req.user.id } }
+      }
+    );
+    successHandle(res, { message: '您已成功取消追蹤！' })
   }),
 }
 module.exports = users

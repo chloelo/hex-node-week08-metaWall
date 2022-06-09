@@ -19,6 +19,8 @@ const commentSchema = new mongoose.Schema(
       ref: 'post',
       require: ['true', 'comment must belong to a post.']
     }
+  }, {
+    versionKey: false,
   }
 );
 // /^find/ 正規表達式，表示 find 開頭
